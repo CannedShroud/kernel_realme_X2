@@ -103,7 +103,7 @@ static void __proc_set_tty(struct tty_struct *tty)
 	put_pid(tty->pgrp);
 	tty->pgrp = get_pid(task_pgrp(current));
 	tty->session = get_pid(task_session(current));
-	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
+    spin_unlock_irqrestore(&tty->ctrl_lock, flags);
 	if (current->signal->tty) {
 		tty_debug(tty, "current tty %s not NULL!!\n",
 			  current->signal->tty->name);
@@ -293,19 +293,19 @@ void disassociate_ctty(int on_exit)
 	put_pid(current->signal->tty_old_pgrp);
 	current->signal->tty_old_pgrp = NULL;
 	tty = tty_kref_get(current->signal->tty);
-	spin_unlock_irq(&current->sighand->siglock);
+    spin_unlock_irq(&current->sighand->siglock);
 
 	if (tty) {
 		unsigned long flags;
 
-		tty_lock(tty);
+        tty_lock(tty);
 		spin_lock_irqsave(&tty->ctrl_lock, flags);
 		put_pid(tty->session);
 		put_pid(tty->pgrp);
 		tty->session = NULL;
 		tty->pgrp = NULL;
 		spin_unlock_irqrestore(&tty->ctrl_lock, flags);
-		tty_unlock(tty);
+        tty_unlock(tty);
 		tty_kref_put(tty);
 	}
 
@@ -479,7 +479,6 @@ static int tiocspgrp(struct tty_struct *tty, struct tty_struct *real_tty, pid_t 
 		return -ENOTTY;
 	if (retval)
 		return retval;
-
 	if (get_user(pgrp_nr, p))
 		return -EFAULT;
 	if (pgrp_nr < 0)
@@ -489,8 +488,8 @@ static int tiocspgrp(struct tty_struct *tty, struct tty_struct *real_tty, pid_t 
 	if (!current->signal->tty ||
 	    (current->signal->tty != real_tty) ||
 	    (real_tty->session != task_session(current))) {
-		retval = -ENOTTY;
-		goto out_unlock_ctrl;
+			retval = -ENOTTY;
+			goto out_unlock_ctrl;
 	}
 	rcu_read_lock();
 	pgrp = find_vpid(pgrp_nr);
@@ -506,7 +505,7 @@ static int tiocspgrp(struct tty_struct *tty, struct tty_struct *real_tty, pid_t 
 out_unlock:
 	rcu_read_unlock();
 out_unlock_ctrl:
-	spin_unlock_irq(&real_tty->ctrl_lock);
+    spin_unlock_irq(&real_tty->ctrl_lock);
 	return retval;
 }
 
@@ -521,8 +520,8 @@ out_unlock_ctrl:
  */
 static int tiocgsid(struct tty_struct *tty, struct tty_struct *real_tty, pid_t __user *p)
 {
-	unsigned long flags;
-	pid_t sid;
+    unsigned long flags;
+    pid_t sid;
 
 	/*
 	 * (tty == real_tty) is a cheap way of
